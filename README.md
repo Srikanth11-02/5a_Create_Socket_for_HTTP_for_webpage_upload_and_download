@@ -16,6 +16,93 @@ To write a PYTHON program for socket for HTTP for web page upload and download
 6.Stop the program
 <BR>
 ## Program 
+CLIENT
+```
+import socket
+
+s = socket.socket()
+s.connect(("localhost",3024))
+
+ch = input("1.Download 2.Upload : ")
+
+if ch == "1":
+    req = "GET / HTTP/1.1\nHost: localhost\n\n"
+    s.send(req.encode())
+
+    data = s.recv(4096)
+    print(data.decode())
+
+else:
+    msg = input("Enter data to upload: ")
+
+    req = "POST / HTTP/1.1\nHost: localhost\n\n" + msg
+    s.send(req.encode())
+
+    data = s.recv(1024)
+    print(data.decode())
+
+s.close()
+
+```
+SERVER
+```
+import socket
+
+s = socket.socket()
+s.bind(("localhost",3024))
+s.listen(1)
+
+print("Server running...")
+
+while True:
+    c,addr = s.accept()
+    
+    request = c.recv(1024).decode()
+    print("Request received")
+
+    if "GET" in request:
+        f = open("index.html","r")
+        data = f.read()
+        f.close()
+
+        response = "HTTP/1.1 200 OK\n\n" + data
+        c.send(response.encode())
+
+    elif "POST" in request:
+        data = request.split("\n\n")[1]
+
+        f = open("upload.txt","w")
+        f.write(data)
+        f.close()
+
+        c.send("HTTP/1.1 200 OK\n\nFile Uploaded".encode())
+
+    c.close()
+
+```
+INDEX.HTML
+```
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Hello
+        </title>
+    </head>
+    <body>
+        <div>
+            <h1>
+                SKEUMORPHISM
+            </h1>
+        </div>
+    </body>
+</html>
+```
+
 ## OUTPUT
+<img width="1043" height="596" alt="image" src="https://github.com/user-attachments/assets/9dd875eb-cb6a-4f96-92fb-e0afec9942b8" />
+
+<img width="1042" height="233" alt="image" src="https://github.com/user-attachments/assets/5776b608-22aa-4060-9fe2-0825d72442e7" />
+
 ## Result
 Thus the socket for HTTP for web page upload and download created and Executed
